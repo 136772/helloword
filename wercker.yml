@@ -1,0 +1,34 @@
+box: golang
+build:
+  steps:
+    - setup-go-workspace
+
+    -script:
+      name: go get
+      code: |
+        go get github.com/136772/helloword
+
+    -script:
+      name: go build
+      code: |
+        go build -o magpie main.go
+
+    -script:
+      name: go test
+      code: |
+        go test ./...
+
+    -script:
+      name: copy files to wercker output
+      code: |
+        cp -R ./ {WERCKER_OUTPUT_DIR}
+
+deploy:
+  steps:
+    - internal/docker-push:
+      username: $USERNAME
+      password: $PASSWORD
+
+      cmd: /pipline/sourck/helloword
+      tag: latest
+      repository: 136772/helloword
